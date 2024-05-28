@@ -90,7 +90,7 @@ FlowDance supports two types of Compensating actions;
   public AmqpCompensatingAction(string queueName, string compensationData)
   public AmqpCompensatingAction(string queueName, string compensationData, Dictionary<string, string> headers)
   ```
-You can use the postData and messageData as it fit your needs. If don´t set your own data/json, the Correlation ID / Trace ID will be added by default.
+You can use the CompensationData as it fit your needs. If don´t set your own data/json, the Correlation ID / Trace ID will be added by default.
 By default Correlation ID / Trace ID will be added as a header (X-Correlation-Id) on both http and message transport. 
 
 ## The Saga Pattern
