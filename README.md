@@ -79,16 +79,16 @@ FlowDance supports two types of Compensating actions;
   Support synchronously REST API calls via http.
   ```csharp
   public HttpCompensatingAction(string url)
-  public HttpCompensatingAction(string url, string postData)
-  public HttpCompensatingAction(string url, string postData, Dictionary<string, string> headers)
+  public HttpCompensatingAction(string url, string compensationData)
+  public HttpCompensatingAction(string url, string compensationData, Dictionary<string, string> headers)
   ```
   
 * **AmqpCompensatingAction**<br>
   Support asynchronous message-based communication via the amqp protocol over RabbitMQ.
   ```csharp
   public AmqpCompensatingAction(string queueName)
-  public AmqpCompensatingAction(string queueName, string messageData)
-  public AmqpCompensatingAction(string queueName, string messageData, Dictionary<string, string> headers)
+  public AmqpCompensatingAction(string queueName, string compensationData)
+  public AmqpCompensatingAction(string queueName, string compensationData, Dictionary<string, string> headers)
   ```
 You can use the postData and messageData as it fit your needs. If don´t set your own data/json, the Correlation ID / Trace ID will be added by default.
 By default Correlation ID / Trace ID will be added as a header (X-Correlation-Id) on both http and message transport. 
