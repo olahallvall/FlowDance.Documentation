@@ -182,7 +182,7 @@ FlowDance goal is help the developer replace System.Transactions.TransactionScop
 
 ## How to work with CompensationSpan in code
 
-Here we create a root span. 
+Here we create a root span with two CompensationData-entities.
 
 ```csharp
 
@@ -190,13 +190,12 @@ public void RootCompensationSpan()
 {
     var traceId = Guid.NewGuid();
 
-    using (CompensationSpan compSpan = 
-            new CompensationSpan(new HttpCompensatingAction("http://localhost/TripBookingService/Compensation"), traceId, _loggerFactory))
+    using (var compSpanRoot = new CompensationSpan(new HttpCompensatingAction("http://localhost/TripBookingService/Compensation"), traceId, _factory))
     {
-        /* Perform transactional work here */
-        // DoSomething()
+        compSpanRoot.AddCompensationData("SomeDataYouWantToByAbleToRollbackTo", "QC");
 
-        compSpan.Complete();
+        /* Perform transactional work here */
+        compSpanRoot.Complete("SomeDataYouWantToByAbleToRollbackTo1", "QC1");
     }
 }
 
@@ -205,30 +204,36 @@ public void RootCompensationSpan()
 Here we create a root span with a inner span. They are sharing the same traceId. 
 
 ```csharp
- 
 public void RootWithInnerCompensationSpan()
 {
     var traceId = Guid.NewGuid();
 
-    // The top-most compensation span is referred to as the root span.
+     // The top-most compensation scope is referred to as the root scope.
     // Root scope
-    using (CompensationSpan compSpanRoot = 
-            new CompensationSpan(new HttpCompensatingAction("http://localhost/TripBookingService/Compensation"), traceId, _loggerFactory))
+    using (var compSpanRoot = 
+           new CompensationSpan(new HttpCompensatingAction("http://localhost/TripBookingService/Compensation",
+           new Dictionary<string, string>() { { "KeyB", "656565" } }), traceId, _factory))
     {
-        /* Perform transactional work here */
-        // DoSomething()
+        compSpanRoot.AddCompensationData("SomeDataYouWantToByAbleToRollbackToForTheTrip", "TripBegin");
 
-        // Inner span
-        using (CompensationSpan compSpanInner = 
-                new CompensationSpan(new HttpCompensatingAction("http://localhost/CarService/Compensation"), traceId, _loggerFactory))
+        // Inner scope
+        using (var compSpanInnerCar = new CompensationSpan(new HttpCompensatingAction("http://localhost/CarService/Compensation"),
+               traceId, _factory))
         {
             /* Perform transactional work here */
-            // DoSomething()
+            compSpanInnerCar.AddCompensationData("SomeDataYouWantToByAbleToRollbackToForTheCar1", "Car1");
 
-            compSpanInner.Complete();
+            /* Perform transactional work here */
+            compSpanInnerCar.AddCompensationData("SomeDataYouWantToByAbleToRollbackToForTheCar11", "Car11");
+
+            throw new Exception("Something bad has happened!");
+
+           /* This will not be called. */
+           compSpanInnerCar.Complete("SomeDataYouWantToByAbleToRollbackToForTheCar2", "Car2");
         }
-                 
-        compSpanRoot.Complete();
+
+        /* This will not be called. */
+        compSpanRoot.Complete("SomeDataYouWantToByAbleToRollbackToForTheTrip", "TripEnd");
     }
 }
 ```
