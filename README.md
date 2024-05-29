@@ -99,7 +99,7 @@ You can add multiple compensation data to a Span.
 ```csharp
 public void AddCompensationData(string compensationData, string compensationDataIdentifier)
 ```
-Or you can added when a Span are to be Completed.
+Or can be added when a Span are to be Completed.
 ```csharp
 public void Complete(string compensationData, string compensationDataIdentifier)
 ```
