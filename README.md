@@ -93,6 +93,7 @@ FlowDance supports two types of Compensating actions;
 #### Compensation data
 Holds the data associated with a SpanCompensation. Use this data to compensate. Only you know how to compensate the data for a Span! Use it as it fits you needs! 
 Only your imagination sets the limit. Maybe you shouldn't add a very massive dataset here due to performance issues. 
+A saved CompensationData entity can´t be lost - it's stored in a Stream in RabbitMq.
 
 You can add multiple compensation data to a Span. 
 ```csharp
