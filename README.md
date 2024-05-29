@@ -79,17 +79,57 @@ FlowDance supports two types of Compensating actions;
   Support synchronously REST API calls via http.
   ```csharp
   public HttpCompensatingAction(string url)
-  public HttpCompensatingAction(string url, string compensationData)
-  public HttpCompensatingAction(string url, string compensationData, Dictionary<string, string> headers)
+  public HttpCompensatingAction(string url, Dictionary<string, string> headers)
   ```
   
 * **AmqpCompensatingAction**<br>
   Support asynchronous message-based communication via the amqp protocol over RabbitMQ.
   ```csharp
   public AmqpCompensatingAction(string queueName)
-  public AmqpCompensatingAction(string queueName, string compensationData)
-  public AmqpCompensatingAction(string queueName, string compensationData, Dictionary<string, string> headers)
+  public AmqpCompensatingAction(string queueName, Dictionary<string, string> headers)
   ```
+
+#### Compensation data
+Holds the data associated with a SpanCompensation. Use this data to compensate if needed. 
+Only you know how to compensate the data for a Span! Use it as it fits you needs! 
+Only your imagination sets the limit. Maybe you shouldn't add a very massive dataset here due to performance issues. 
+
+You can add multiple compensation data to Span. 
+```csharp
+public void AddCompensationData(string compensationData, string compensationDataIdentifier)
+```
+Or you can added when Span are to be Completed.
+```csharp
+public void Complete(string compensationData, string compensationDataIdentifier)
+```
+
+Here are an example where we add compensation data in the first part of the Span and in the end using the Complete-function.
+```csharp
+var traceId = Guid.NewGuid();
+
+using (var compSpan = new CompensationSpan(new HttpCompensatingAction("http://localhost:49983/Compensating.svc/Compensate"), traceId, loggerFactory))
+{
+    // Generate a BookingNr in local database.
+    var bookingNr = "45TY-UI-8989";
+    compSpan.AddCompensationData(bookingNr, "BookingNr");
+
+    var svr = new CarService.CarClient();
+    var carNumber = svr.BookCar(passportNumber, traceId);
+
+    compSpan.Complete(carNumber.ToString(), "CarNumber");
+}
+```
+
+If a compensation is needed you can access this data in the compensate-function like this
+```csharp
+[HttpPost]
+public async Task<IActionResult> Compensate([FromBody]string compensationData)
+{
+     var compensationDataList = JsonConvert.DeserializeObject<List<SpanCompensationData>>(compensationData);
+
+}
+```
+
 You can use the CompensationData as it fit your needs. If don´t set your own data/json, the Correlation ID / Trace ID will be added by default.
 By default Correlation ID / Trace ID will be added as a header (X-Correlation-Id) on both http and message transport. 
 
