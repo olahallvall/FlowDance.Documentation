@@ -61,14 +61,15 @@ In the image below, we have replaced `System.Transactions.TransactionScope` with
 
 ![Synchronous choreography-based call chains supported by FlowDance](Images/synchronous-choreography-based-call-chains-with-span.png)
 
-### Semantic Rollback
+### Semantic Rollback or CompensatingAction
 Semantic rollback refers to the process of reverting changes in a way that aligns with how things works in real life.
 Imagine you accidentally knock over a cup of coffee. The warm liquid spills out and spreads across the surface. You might say, “Oops! I spilled my coffee all over the table.”
 
 You can´t undo this! We don´t have an Ctrl+Z in real life. You can leave it as is it or you can compensate. Which one you prefer to do, you can't undone the event. It has happened wherever you like it or not.    
 
 Distributed Transactions Calls supported by MSDTC offers a Ctrl+Z due to how ACID works. 
-In an Eventual Consistency-based solution, involving multiple parts, ACID is no longer available to us. We have to compensate manually.     
+In an Eventual Consistency-based solution, involving multiple parts, ACID is no longer available to us. We have to compensate manually. 
+
 The Data that has been added, deleted or changed needs to be compensated for. It´s requires domain knowledge how to "rollback" the action that has been performed in the system. Maybe our code have to call another system during the rollback? And that system have to call another system... Complex it is! 
 
 *Compensating action is probably the hardest thing with an Eventual Consistency-based solution!*
@@ -90,15 +91,14 @@ FlowDance supports two types of Compensating actions;
   ```
 
 #### Compensation data
-Holds the data associated with a SpanCompensation. Use this data to compensate if needed. 
-Only you know how to compensate the data for a Span! Use it as it fits you needs! 
+Holds the data associated with a SpanCompensation. Use this data to compensate. Only you know how to compensate the data for a Span! Use it as it fits you needs! 
 Only your imagination sets the limit. Maybe you shouldn't add a very massive dataset here due to performance issues. 
 
-You can add multiple compensation data to Span. 
+You can add multiple compensation data to a Span. 
 ```csharp
 public void AddCompensationData(string compensationData, string compensationDataIdentifier)
 ```
-Or you can added when Span are to be Completed.
+Or you can added when a Span are to be Completed.
 ```csharp
 public void Complete(string compensationData, string compensationDataIdentifier)
 ```
