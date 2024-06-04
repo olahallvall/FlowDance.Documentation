@@ -108,7 +108,7 @@ Here are an example where we add compensation data in the first part of the Span
 ```csharp
 var traceId = Guid.NewGuid();
 
-using (var compSpan = new CompensationSpan(new HttpCompensatingAction("http://localhost:49983/Compensating.svc/Compensate"), traceId, loggerFactory))
+using (var compSpan = new CompensationSpan(new HttpCompensatingAction("http://localhost:49983/compensating/compensate"), traceId, loggerFactory))
 {
     // Generate a BookingNr in local database.
     var bookingNr = "45TY-UI-8989";
@@ -123,11 +123,12 @@ using (var compSpan = new CompensationSpan(new HttpCompensatingAction("http://lo
 
 If a compensation is needed you can access this data in the compensate-function like this
 ```csharp
-[HttpPost]
-public async Task<IActionResult> Compensate([FromBody]string compensationData)
+[HttpPost("compensate")]
+public ActionResult Compensate([FromBody] IList<SpanCompensationData> compensationData)
 {
-     var compensationDataList = JsonConvert.DeserializeObject<List<SpanCompensationData>>(compensationData);
+    // Compensation code
 
+    return Ok();
 }
 ```
 
