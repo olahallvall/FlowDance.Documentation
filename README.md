@@ -139,6 +139,10 @@ By default Correlation ID / Trace ID will be added as a header (X-Correlation-Id
 
 ### FlowDance supports both Blocking call chain and Non-blocking call chain
 FlowDance support to execute compensating actions in both blocking call chain and non-blocking call chain.
+![Blocking call chain](Images/BlockingCallChain.png)
+
+
+![Non-blocking call chain](Images/NonBlockingCallChain.png)
 
 
 ## The Saga Pattern
