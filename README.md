@@ -30,8 +30,10 @@ Some services has been created using the Database-per-Service Pattern but still 
 A team may already have started working with a new technology stack, maybe it is .NET Core? It’s important to note that .NET Core does not support Distributed Transaction Calls as facilitated by MSDTC. That put our team in a position where they not even can offer any type of controlled consistency if there code is a part of an overall call chain. 
 It’s more fire and hope all works out as it suppose to🤞. 
 
-In the picure below shows how easy a call chain gets created in the system. 
-The user is attempting to book a trip that includes a car rental, hotel reservation, and flight.
+### Blocking call chain vs Non-blocking call chain
+The figure below shows how easy a call chain gets created in the system. 
+The user is attempting to book a trip that includes a car rental, hotel reservation, and flight booking. These calls are made in a synchronous way, also called blocking call chain as opposed to non-blocking call chain. In a non-blocking call chain one task isn't dependent on another. Tasks can run simultaneously. Blocking call chain is a blocking architecture, so the execution of each operation depends on completing the one before it. Each task requires an answer before moving on to the next iteration.
+
 The solution employs a microservices architecture, where each component (car, hotel, and flight) has its own dedicated microservice. These microservices are seamlessly integrated using a Distributed Transaction Coordinator (DTC) session.
 If we would add an one or more services to the call chain the transactions scope would increase even more and introduces more complexity, more performance overhead, and potential deadlocks.  
 
