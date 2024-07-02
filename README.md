@@ -138,13 +138,13 @@ You can use the CompensationData as it fit your needs. If don´t set your own da
 By default Correlation ID / Trace ID will be added as a header (X-Correlation-Id) on both http and message transport. 
 
 ### FlowDance supports both Blocking call chain and Non-blocking call chain
-FlowDance supports to execute compensating actions in both in a blocking call chain and non-blocking call chain. The main diffrent between this two types is when the compensation actions will be called if needed.  
+FlowDance supports to execute compensating actions in both a blocking call chain and non-blocking call chain. The main diffrent between this two types is **when** the compensation actions will be called, if needed.  
 
 The figure below illustrates a blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. No compensation actions will be perform **before the rootspan has been closed**.  
 ![Blocking call chain](Images/BlockingCallChain.png)
 
-The figure below illustrates a non-blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. Compensation actions can be performed **before all spans has been closed**. If one of the Spans thows an SpanClosedBattered-event the Compensation saga will start up and begin call compensation actions for all Spans regardless if the RootSpan (or other Spans) has been closed (Dispose) or not. 
-This means the you get into a situation where two task trying to change to the same data in the database. The first task are trying for exemple adding Customer data, meanwhile the other task i trying to compensate for the first task and deleting the Customer data. This phenomenon is called race condition and is well known - [https://www.techtarget.com/searchstorage/definition/race-condition]
+The figure below illustrates a non-blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. Compensation actions can be performed **before all spans has been closed**. If one of the Spans throws an SpanClosedBattered-event the Compensation saga will start up and begin call compensation actions for all Spans regardless if the RootSpan (or other Spans) has been closed (Dispose) or not. 
+This means the you get into a situation where two task trying to change to the same data in a database for exemple. The first task are trying for exemple adding Customer data, meanwhile the other task i trying to compensate for the first task and deleting the Customer data. This phenomenon is called race condition and is well known - [https://www.techtarget.com/searchstorage/definition/race-condition]
 
 ![Non-blocking call chain](Images/NonBlockingCallChain.png)
 #### The RootSpan sets the call chain-model
