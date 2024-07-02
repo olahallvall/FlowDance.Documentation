@@ -42,7 +42,7 @@ So the conclusion is the Distributed Transactions with strong consistency don´t
 ![Synchronous choreography-based call chains](Images/synchronous-choreography-based-call-chains.png)
 
 ## Leaving the world of strong consistency
-So how does FlowDance help us out when we still want to base our solution on synchronous RPC-Calls and use compensating transaction but leaving MSDTC behind?
+So how does FlowDance help us out when we still want to base our solution on synchronous RPC-Calls (blocking call chain) and use compensating transaction but leaving MSDTC behind?
 Event-driven architecture is out of scoop here for a number of reasons :)
 
 In short - by replacing **System.Transactions.TransactionScope** with **FlowDance.Client.CompensationSpan** you leaves the world of strong consistency into eventual consistency.
@@ -63,7 +63,7 @@ In the image below, we have replaced `System.Transactions.TransactionScope` with
 
 ![Synchronous choreography-based call chains supported by FlowDance](Images/synchronous-choreography-based-call-chains-with-span.png)
 
-### Semantic Rollback or Compensating Action
+### Compensating Action OR Semantic Rollback
 Semantic rollback refers to the process of reverting changes in a way that aligns with how things works in real life.
 Imagine you accidentally knock over a cup of coffee. The warm liquid spills out and spreads across the surface. You might say, “Oops! I spilled my coffee all over the table.”
 
@@ -188,12 +188,9 @@ FlowDance goal is help the developer replace System.Transactions.TransactionScop
 Here we create a root span with two CompensationData-entities.
 
 ```csharp
-
 public void RootCompensationSpan()
 {
-    var traceId = Guid.NewGuid();
-
-    using (var compSpanRoot = new CompensationSpan(new HttpCompensatingAction("http://localhost/TripBookingService/Compensation"), traceId, _factory))
+    using (var compSpanRoot = new CompensationSpan(new HttpCompensatingAction("http://localhost/TripBookingService/Compensation"), null, _factory, CompensationSpanOption.RequiresNewBlockingCallChain))
     {
         compSpanRoot.AddCompensationData("SomeDataYouWantToByAbleToRollbackTo", "QC");
 
@@ -201,44 +198,29 @@ public void RootCompensationSpan()
         compSpanRoot.Complete("SomeDataYouWantToByAbleToRollbackTo1", "QC1");
     }
 }
-
 ```
 
-Here we create a root span with a inner span. They are sharing the same traceId. 
-
+By using a ActionFilter in a ASP.NET Core controller we have access to a CompensationSpan.
 ```csharp
-public void RootWithInnerCompensationSpan()
-{
-    var traceId = Guid.NewGuid();
+ [CompensationSpan(CompensatingActionUrl = "http://localhost/TripBookingService/Compensation", CompensationSpanOption = CompensationSpanOption.RequiresNewBlockingCallChain)]
+ [HttpGet(Name = "GetWeatherForecast")]
+ public IEnumerable<WeatherForecast> Get()
+ {
+     // Access the CompensationSpan instance from the ActionFilter
+     var compensationSpan = HttpContext.Items["CompensationSpan"] as CompensationSpan;
 
-     // The top-most compensation scope is referred to as the root scope.
-    // Root scope
-    using (var compSpanRoot = 
-           new CompensationSpan(new HttpCompensatingAction("http://localhost/TripBookingService/Compensation",
-           new Dictionary<string, string>() { { "KeyB", "656565" } }), traceId, _factory))
-    {
-        compSpanRoot.AddCompensationData("SomeDataYouWantToByAbleToRollbackToForTheTrip", "TripBegin");
+     compensationSpan.AddCompensationData("fffff");
 
-        // Inner scope
-        using (var compSpanInnerCar = new CompensationSpan(new HttpCompensatingAction("http://localhost/CarService/Compensation"),
-               traceId, _factory))
-        {
-            /* Perform transactional work here */
-            compSpanInnerCar.AddCompensationData("SomeDataYouWantToByAbleToRollbackToForTheCar1", "Car1");
+     var traceId = compensationSpan.TraceId;
 
-            /* Perform transactional work here */
-            compSpanInnerCar.AddCompensationData("SomeDataYouWantToByAbleToRollbackToForTheCar11", "Car11");
-
-            throw new Exception("Something bad has happened!");
-
-           /* This will not be called. */
-           compSpanInnerCar.Complete("SomeDataYouWantToByAbleToRollbackToForTheCar2", "Car2");
-        }
-
-        /* This will not be called. */
-        compSpanRoot.Complete("SomeDataYouWantToByAbleToRollbackToForTheTrip", "TripEnd");
-    }
-}
+     return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+     {
+         Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+         TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+         })
+         .ToArray();
+     }
 ```
 ## Component overview
 
