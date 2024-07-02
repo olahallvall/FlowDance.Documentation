@@ -143,7 +143,7 @@ FlowDance supports to execute compensating actions in both in a blocking call ch
 This figure illustrates a blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. No compensation actions will be perform **before the rootspan has been closed**.  
 ![Blocking call chain](Images/BlockingCallChain.png)
 
-This figure illustrates a non-blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. Compensation actions can be performed **before all spans has been closed**. If av Span-instance thows a SpanClosedBattered-event the Compensation saga will start up and begin call compensation actions for all Span.     
+This figure illustrates a non-blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. Compensation actions can be performed **before all spans has been closed**. If av Span-instance thows a SpanClosedBattered-event the Compensation saga will start up and begin call compensation actions for all Spans.     
 ![Non-blocking call chain](Images/NonBlockingCallChain.png)
 #### The RootSpan sets the call chain-model
 The RootSpan sets the call chain-model by is CompensationSpanOption class. 
