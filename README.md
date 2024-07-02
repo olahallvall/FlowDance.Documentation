@@ -138,12 +138,13 @@ You can use the CompensationData as it fit your needs. If don´t set your own da
 By default Correlation ID / Trace ID will be added as a header (X-Correlation-Id) on both http and message transport. 
 
 ### FlowDance supports both Blocking call chain and Non-blocking call chain
-FlowDance support to execute compensating actions in both blocking call chain and non-blocking call chain.
+FlowDance supports to execute compensating actions in both in a blocking call chain and non-blocking call chain. The main diffrent between this two types is when the compensation actions will be called if needed.  
+
+This figure illustrates a blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. No compensation actions will be perform **before the rootspan has been closed**.  
 ![Blocking call chain](Images/BlockingCallChain.png)
 
-
+This figure illustrates a non-blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. Compensation actions can be performed **before all spans has been closed**. If av Span-instance thows a SpanClosedBattered-event the Compensation saga will start up and begin call compensation actions for all Span.     
 ![Non-blocking call chain](Images/NonBlockingCallChain.png)
-
 
 ## The Saga Pattern
 The Saga Pattern is an architectural approach used to manage data consistency across microservices in distributed transaction scenarios.
