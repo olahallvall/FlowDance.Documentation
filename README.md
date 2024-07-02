@@ -137,6 +137,10 @@ public ActionResult Compensate([FromBody] IList<SpanCompensationData> compensati
 You can use the CompensationData as it fit your needs. If don´t set your own data/json, the Correlation ID / Trace ID will be added by default.
 By default Correlation ID / Trace ID will be added as a header (X-Correlation-Id) on both http and message transport. 
 
+### FlowDance supports both Blocking call chain and Non-blocking call chain
+FlowDance support to execute compensating actions in both blocking call chain and non-blocking call chain.
+
+
 ## The Saga Pattern
 The Saga Pattern is an architectural approach used to manage data consistency across microservices in distributed transaction scenarios.
 
