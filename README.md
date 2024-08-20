@@ -1,12 +1,12 @@
 # FlowDance
 FlowDance aims to address several critical aspects in the context of microservices architecture. Let's delve into each of these goals:
 
-**Support Inter-service Communication Between Microservices (Database-per-Service Pattern)**
+**Support Inter-service Communication Between Microservices (Database-per-Service Pattern):**\
 In a microservices architecture, each service often manages its own database. The **Database-per-Service Pattern** encourages this separation.
 By adopting this pattern, services can communicate with each other through well-defined APIs, avoiding direct database access.
 This approach enhances modularity, scalability, and isolation, allowing services to evolve independently.
 
-**Replacing Distributed Transactions Calls supported by MSDTC** 
+**Replacing Distributed Transactions Calls supported by MSDTC:**\ 
 MSDTC (Microsoft Distributed Transaction Coordinator) is commonly used for distributed transactions across multiple databases.
 However, MSDTC introduces complexity, performance overhead, and potential deadlocks.
 FlowDance proposes a shift towards synchronous RPC (Remote Procedure Call) communication.
@@ -14,7 +14,7 @@ Services share a **Correlation ID / Trace ID** to track related requests across 
 Instead of distributed transactions, services coordinate their actions using synchronous calls, simplifying the architecture.
 While strong consistency is essential in some business cases, FlowDance aims to minimize the need for distributed transactions.
 
-**Moving Away from Strong Consistency to Eventual Consistency Using the Compensating Transaction (or Compensating Action) Pattern**
+**Moving Away from Strong Consistency to Eventual Consistency Using the Compensating Transaction (or Compensating Action) Pattern:**\
 In distributed systems, achieving strong consistency (ACID properties) across all services can be challenging.
 FlowDance embraces **eventual consistency**, where operations may temporarily yield inconsistent results.
 The **Compensating Transaction Pattern** comes into play when a step in a process fails.
