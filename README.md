@@ -144,7 +144,7 @@ The figure below illustrates a blocking call chain and how Span events are added
 ![Blocking call chain](Images/BlockingCallChain.png)
 
 The figure below illustrates a non-blocking call chain and how Span events are added to a event stream as the execution of the call chain continues. Compensation actions can be performed **before all spans has been closed**. If one of the Spans throws an SpanClosedBattered-event the Compensation saga will start up and begin call compensation actions for all Spans regardless if the RootSpan (or other Spans) has been closed (Dispose) or not. 
-This means the you get into a situation where two task trying to change to the same data in a database for exemple. The first task are trying for exemple adding Customer data, meanwhile the other task i trying to compensate for the first task and deleting the Customer data. This phenomenon is called race condition and is well known - [https://www.techtarget.com/searchstorage/definition/race-condition]
+This means the you get into a situation where two task simultaneously trying to change to the same data in a database for exemple. The first task are trying for exemple adding Customer data, meanwhile the other task i trying to compensate for the first task and deleting the Customer data. This phenomenon is called race condition and is well known - [https://www.techtarget.com/searchstorage/definition/race-condition]
 
 ![Non-blocking call chain](Images/NonBlockingCallChain.png)
 #### The RootSpan sets the call chain-model
