@@ -63,7 +63,7 @@ In the image below, we have replaced `System.Transactions.TransactionScope` with
 
 ![Synchronous choreography-based call chains supported by FlowDance](Images/synchronous-choreography-based-call-chains-with-span.png)
 
-### Compensating Action OR Semantic Rollback
+### Compensating Action Or Semantic Rollback
 Semantic rollback refers to the process of reverting changes in a way that aligns with how things works in real life.
 Imagine you accidentally knock over a cup of coffee. The warm liquid spills out and spreads across the surface. You might say, “Oops! I spilled my coffee all over the table.”
 
