@@ -265,7 +265,7 @@ By using a ActionFilter in a ASP.NET Core controller we have access to a Compens
 ```
 ## Component overview
 
-FlowDance consist of two main parts; FlowDance.Client and FlowDance.AzureFunctions tied together with RabbitMQ.
+FlowDance consist of two main parts; FlowDance.Client (NuGet component - https://www.nuget.org/packages/FlowDance.Client/) and FlowDance.Server (Docker Hub image - https://hub.docker.com/r/olahallvall/flowdance) tied together with RabbitMQ and SQL Server.
 
 As a user of FlowDance you add a reference to FlowDance.Client from our code. By doing that you can start using CompensationSpan class.
 
